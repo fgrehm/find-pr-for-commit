@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# TODO:
+#   - Docs
+#   - Homebrew formula
+#   - Show a nice message when no PRs are found
+#   - Infer project from git settings (support for HTTP)
+
+# Setup: brew install jq
+# Usage: ./find-pr-for-commit
+
+set -e
+
+GITHUB_ACCESS_TOKEN=${GITHUB_ACCESS_TOKEN:-}
+PROJECT=
+COMMIT=
+
+if [ $# -eq 0 ] || [ $# -gt 2 ]; then
+  echo 'Error' && exit 1
+elif [ $# -eq 1 ]; then
+  PROJECT=$(git remote get-url origin | sed -e 's/^git@github.com:\(.*\).git$/\1/g')
+  COMMIT="${1}"
+else
+  PROJECT="${1}"
+  COMMIT="${2}"
+fi
+
+if [ "${GITHUB_ACCESS_TOKEN}" = "" ]; then
+  if [ -f $HOME/.config/gh ]; then
+    echo "Reusing gh access token found on $HOME/.config/gh"
+    GITHUB_ACCESS_TOKEN=$(jq -r '.credentials[0].access_token' ~/.config/gh)
+  fi
+fi
+
+HEADERS=
+if [ "${GITHUB_ACCESS_TOKEN}" != "" ]; then
+  HEADERS="-H 'Authorization: token ${GITHUB_ACCESS_TOKEN}'"
+fi
+
+echo "Looking up PRs for ${PROJECT}@${COMMIT}..."
+
+URL="https://api.github.com/search/issues?q=${COMMIT}+type:pr+repo:${PROJECT}"
+eval "curl -sL $HEADERS '$URL'" \
+  | jq -r '.items | .[] | "  * " + .pull_request.html_url' \
+  | sort
