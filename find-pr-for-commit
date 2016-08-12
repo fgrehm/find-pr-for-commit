@@ -7,7 +7,7 @@
 #   - Infer project from git settings (support for HTTP)
 
 # Setup: brew install jq
-# Usage: ./find-pr-for-commit
+# Usage: ./find-pr-for-commit [PROJECT] SHA
 
 set -e
 
