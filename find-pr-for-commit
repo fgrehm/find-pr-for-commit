@@ -9,8 +9,6 @@
 # Setup: brew install jq hub
 # Usage: ./find-pr-for-commit [PROJECT] SHA
 
-#!/bin/bash
-
 set -e
 
 PROJECT=
