@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Usage: hub-pr-with-commit [PROJECT] SHA
+# Usage: ./find-pr-for-commit [PROJECT] SHA
 #
 # Authors: Fabio Rehm, Mislav Marohnić
 
